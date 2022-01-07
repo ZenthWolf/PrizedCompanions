@@ -9,7 +9,6 @@ using Verse;
 
 namespace Prized_Companions
 {
-    /*
     [HarmonyPatch(typeof(AutoSlaughterManager), "CanEverAutoSlaughter")]
     internal static class PrizedCompanionsCantBeSlaughteredPatch
     {
@@ -21,8 +20,8 @@ namespace Prized_Companions
             }
         }
     }
-    */
 
+    /*
     [HarmonyPatch(typeof(AutoSlaughterManager), "get_AnimalsToSlaughter")]
     internal static class PrizedCompanionsGetterTester
     {
@@ -32,4 +31,5 @@ namespace Prized_Companions
             __result.Clear();
         }
     }
+    */
 }

@@ -52,6 +52,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PCReorgKillList.cs" />
     <Compile Include="PCOnLoad.cs" />
     <Compile Include="PCNotifyNames.cs" />
     <Compile Include="PCAutoSlaughterPatch.cs" />
