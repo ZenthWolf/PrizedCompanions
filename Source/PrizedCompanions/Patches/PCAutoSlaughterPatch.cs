@@ -23,7 +23,7 @@ namespace Prized_Companions
     {
         private static void Postfix(ref bool __result, Pawn animal)
         {
-            if (false && PrizedCompanions.Instance.settings.isActive && PrizedCompanions.Instance.settings.isAlternate)
+            if (PrizedCompanions.Instance.settings.isActive && PrizedCompanions.Instance.settings.isAlternate)
             {
                 if (__result)
                 {

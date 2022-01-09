@@ -38,31 +38,29 @@ namespace Prized_Companions
         {
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
             Label UnPrizedLabel = generator.DefineLabel();
-            
+
+            yield return new CodeInstruction(OpCodes.Ldarg_1);
+            yield return new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(Pawn), "get_Name"));
+            yield return new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(Name), "get_Numerical"));
+            yield return new CodeInstruction(OpCodes.Brtrue_S, UnPrizedLabel);
+
+            yield return new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(PrizedCompanions), nameof(PrizedCompanions.Instance)));
+            yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(PrizedCompanions), nameof(PrizedCompanions.settings)));
+            yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Settings), nameof(Settings.isActive)));
+            yield return new CodeInstruction(OpCodes.Brfalse_S, UnPrizedLabel);
+
+            yield return new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(PrizedCompanions), nameof(PrizedCompanions.Instance)));
+            yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(PrizedCompanions), nameof(PrizedCompanions.settings)));
+            yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Settings), nameof(Settings.isAlternate)));
+            yield return new CodeInstruction(OpCodes.Brfalse_S, UnPrizedLabel);
+
+            yield return new CodeInstruction(OpCodes.Ldc_I8, long.MinValue);
+            yield return new CodeInstruction(OpCodes.Ret);
+
+            codes[0].labels.Add(UnPrizedLabel);
+
             for (int i = 0; i < codes.Count(); ++i)
             {
-                if (codes[i].opcode == OpCodes.Ldarg_1) // Figure this out
-                {
-                    yield return new CodeInstruction(OpCodes.Ldarg_1);
-                    yield return new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(Pawn), "get_Name"));
-                    yield return new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(Name), "get_Numerical"));
-                    yield return new CodeInstruction(OpCodes.Brtrue_S, UnPrizedLabel);
-
-                    yield return new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(PrizedCompanions), nameof(PrizedCompanions.Instance)));
-                    yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(PrizedCompanions), nameof(PrizedCompanions.settings)));
-                    yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Settings), nameof(Settings.isActive)));
-                    yield return new CodeInstruction(OpCodes.Brfalse_S, UnPrizedLabel);
-
-                    yield return new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(PrizedCompanions), nameof(PrizedCompanions.Instance)));
-                    yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(PrizedCompanions), nameof(PrizedCompanions.settings)));
-                    yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Settings), nameof(Settings.isAlternate)));
-                    yield return new CodeInstruction(OpCodes.Brfalse_S, UnPrizedLabel);
-
-                    yield return new CodeInstruction(OpCodes.Ldc_I8, long.MinValue);
-                    yield return new CodeInstruction(OpCodes.Ret);
-
-                    codes[i].labels.Add(UnPrizedLabel);
-                }
                 yield return codes[i];
             }
         }
@@ -209,5 +207,53 @@ namespace Prized_Companions
             __result = ___animalsToSlaughterCached;
             return false;
         }*/
+    }
+
+    //Because pregancy sorts on float- oh no please don't be a source of annoyance.
+    internal static class PrizedCompanionsPreSorter_Flt
+    {
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        {
+            List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+            Label UnPrizedLabel = generator.DefineLabel();
+
+            yield return new CodeInstruction(OpCodes.Ldarg_1);
+            yield return new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(Pawn), "get_Name"));
+            yield return new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(Name), "get_Numerical"));
+            yield return new CodeInstruction(OpCodes.Brtrue_S, UnPrizedLabel);
+
+            yield return new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(PrizedCompanions), nameof(PrizedCompanions.Instance)));
+            yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(PrizedCompanions), nameof(PrizedCompanions.settings)));
+            yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Settings), nameof(Settings.isActive)));
+            yield return new CodeInstruction(OpCodes.Brfalse_S, UnPrizedLabel);
+
+            yield return new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(PrizedCompanions), nameof(PrizedCompanions.Instance)));
+            yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(PrizedCompanions), nameof(PrizedCompanions.settings)));
+            yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Settings), nameof(Settings.isAlternate)));
+            yield return new CodeInstruction(OpCodes.Brfalse_S, UnPrizedLabel);
+
+            yield return new CodeInstruction(OpCodes.Ldc_R4, float.MinValue);
+            yield return new CodeInstruction(OpCodes.Ret);
+
+            codes[0].labels.Add(UnPrizedLabel);
+            
+            for (int i = 0; i < codes.Count(); ++i)
+            {
+                yield return codes[i];
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(AutoSlaughterManager), "get_AnimalsToSlaughter")]
+    internal static class TestClass
+    {
+        static void Postfix(ref List<Pawn> __result)
+        {
+            Log.Message("PostFixing");
+            for (int i = 0; i < __result.Count(); ++i)
+            {
+                Log.Message("Place " + i.ToString() + " is: " + __result[i].Name.ToString());
+            }
+        }
     }
 }
