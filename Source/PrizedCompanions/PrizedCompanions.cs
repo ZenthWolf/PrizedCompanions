@@ -21,19 +21,20 @@ namespace Prized_Companions
 		{
 			Companion_Listing listingCompanion = new Companion_Listing();
 			listingCompanion.Begin(rect);
-			if(this.settings.isActive)
-				_ = listingCompanion.Label("Named Companions are Prized and will not be autoslaughtered.");
+			_=listingCompanion.SectionLabel((string)"Prized_Companions_GeneralSettings".Translate());
+			if (this.settings.isActive)
+				_ = listingCompanion.Label((string)"Prized_Companions_Active".Translate());
 			else
-				_ = listingCompanion.Label("Named animals are food, like the rest of the stock.");
+				_ = listingCompanion.Label((string)"Prized_Companions_Inactive".Translate());
 
-			listingCompanion.CheckboxLabeled("Prized Companions is Active", ref this.settings.isActive, "Enable/Disable Mod");
+			listingCompanion.CheckboxLabeled((string)"Prized_Companions_ActivateCheckBox".Translate(), ref this.settings.isActive, (string)"Prized_Companions_Activator_TTip".Translate());
 			if (!this.settings.isActive)
 				_ = listingCompanion.Label("");
 			else if (this.settings.isAlternate)
-				_ = listingCompanion.Label("Named Companions are counted in total animal population (if not bonded)");
+				_ = listingCompanion.Label((string)"Prized_Companions_Counted".Translate());
 			else
-				_ = listingCompanion.Label("Prized Companions are not counted amongst livestock.");
-			listingCompanion.CheckboxLabeled("Count Prized Companions on the autoslaughter tab (they will still be protected!)", ref this.settings.isAlternate, "Alternate method if you want total count easily.", !this.settings.isActive);
+				_ = listingCompanion.Label((string)"Prized_Companions_NotCounted".Translate());
+			listingCompanion.CheckboxLabeled((string)"Prized_Companions_CountCheckBox".Translate(), ref this.settings.isAlternate, (string)"Prized_Companions_Counter_TTip", !this.settings.isActive);
 			listingCompanion.End();
 
 			this.settings.Update();
@@ -41,6 +42,6 @@ namespace Prized_Companions
 			base.DoSettingsWindowContents(rect);
 		}
 
-		public override string SettingsCategory() => "Prized Companions";
+		public override string SettingsCategory() => (string) "Prized_Companions_Title".Translate();
 	}
 }

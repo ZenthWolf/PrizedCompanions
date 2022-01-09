@@ -41,7 +41,6 @@ namespace Prized_Companions
             
             for (int i = 0; i < codes.Count(); ++i)
             {
-                Log.Message("" + i + ": " + codes[i].ToString());
                 if (codes[i].opcode == OpCodes.Ldarg_1) // Figure this out
                 {
                     yield return new CodeInstruction(OpCodes.Ldarg_1);

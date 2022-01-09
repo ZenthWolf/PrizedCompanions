@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>	
+	<!-- Title -->
+	<Prized_Companions_Title>Prized Companions</Prized_Companions_Title>
+	
+	<!-- Settings -->
+	<Prized_Companions_GeneralSettings>General Settings</Prized_Companions_GeneralSettings>
+	
+	<Prized_Companions_Active>Named Companions are Prized and will not be autoslaughtered.</Prized_Companions_Active>
+	<Prized_Companions_Inactive>Named animals are food, like the rest of the stock.</Prized_Companions_Inactive>
+	<Prized_Companions_ActivateCheckBox>Activate Prized Companions</Prized_Companions_ActivateCheckBox>
+	
+	<Prized_Companions_Activator_TTip>Enable/Disable Mod</Prized_Companions_Activator_TTip>
+	
+	<Prized_Companions_Counted>Prized Companions are counted in total animal population (if not bonded).</Prized_Companions_Counted>
+	<Prized_Companions_NotCounted>Prized Companions are not counted amongst livestock.</Prized_Companions_NotCounted>
+	<Prized_Companions_CountCheckBox>Count Prized Companions on the autoslaughter tab (they will still be protected)</Prized_Companions_CountCheckBox>
+	
+	<Prized_Companions_Counter_TTip>Alternate method if you want total count easily.</Prized_Companions_Counter_TTip>
+</LanguageData>

@@ -29,12 +29,15 @@ namespace Prized_Companions
         }
 
 		private void UpdateSlaughterers()
-        {
-			List<Map> SlaughteringGrounds = Current.Game.Maps;
-			foreach(Map map in SlaughteringGrounds)
-            {
-				map.autoSlaughterManager.Notify_ConfigChanged();
-            }
+		{
+			List<Map> SlaughteringGrounds = Find.Maps;
+			if (!SlaughteringGrounds.NullOrEmpty())
+			{
+				foreach (Map map in SlaughteringGrounds)
+				{
+					map.autoSlaughterManager.Notify_ConfigChanged();
+				}
+			}
 		}
 
 		public override void ExposeData()

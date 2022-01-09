@@ -20,5 +20,17 @@ namespace Prized_Companions
             }
             this.Gap(this.verticalSpacing);
         }
+
+        public Rect SectionLabel(string label, float maxHeight = -1f, string tooltip = null)
+        {
+            Text.Font = GameFont.Medium;
+            Rect rect = this.Label(label, maxHeight, tooltip);
+            Text.Font = GameFont.Small;
+            this.GapLine(1f);
+            ++rect.height;
+            this.Gap(11f);
+            rect.height += 11f;
+            return rect;
+        }
     }
 }
