@@ -52,10 +52,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PCReorgKillList.cs" />
-    <Compile Include="PCOnLoad.cs" />
-    <Compile Include="PCNotifyNames.cs" />
-    <Compile Include="PCAutoSlaughterPatch.cs" />
+    <Compile Include="Companion_Listing.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="PrizedCompanions.cs" />
+    <Compile Include="Patches\PCPreSorter.cs" />
+    <Compile Include="Patches\PCPatcher.cs" />
+    <Compile Include="Patches\PCNotifyNames.cs" />
+    <Compile Include="Patches\PCAutoSlaughterPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

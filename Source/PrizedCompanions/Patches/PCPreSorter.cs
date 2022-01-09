@@ -1,35 +1,85 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using HarmonyLib;
 using Verse;
 using RimWorld;
+using System.Reflection.Emit;
 
 namespace Prized_Companions
 {
-    // Currently reproduces behavior
-    class PCReorgKillList
+    // Adds conditions to sorting autoslaughter temp lists
+    internal static class PrizedCompanionsPreSorter
     {
-        [HarmonyPatch(typeof(AutoSlaughterManager), "get_AnimalsToSlaughter")]
-        internal static class PrizedCompanionsGetterTester
-        {
-            private static List<Pawn> tmpAnimals = new List<Pawn>();
-            private static List<Pawn> tmpAnimalsMale = new List<Pawn>();
-            private static List<Pawn> tmpAnimalsMaleYoung = new List<Pawn>();
-            private static List<Pawn> tmpAnimalsFemale = new List<Pawn>();
-            private static List<Pawn> tmpAnimalsFemaleYoung = new List<Pawn>();
-            private static List<Pawn> tmpAnimalsPregnant = new List<Pawn>();
-
-            private static bool Prefix(AutoSlaughterManager __instance, ref List<Pawn> __result, bool ___cacheDirty, ref List<Pawn> ___animalsToSlaughterCached)
-            {
-                if (!___cacheDirty)
+        /*        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
                 {
-                    return true;
-                }
+                    var l = instructions.ToList(); // name your actual transpiler XTranspiler
+                    string s = "Code:";
+                    int i = 0;
+                    foreach (var c in l)
+                    {
+                        if (c.opcode == OpCodes.Call ||
+                            c.opcode == OpCodes.Callvirt)
+                        { // you can make certain operations more visible
+                            Log.Warning("" + i + ": " + c);
+                        }
+                        else
+                        {
+                            Log.Message("" + i + ": " + c);
+                        }
+                        s += "\n" + i + ": " + c;
+                        i++;
+                        yield return c;
+                    }
+                    Log.Error(s); // or just print the entire thing out to copy to a text editor.
+                }*/
 
+        static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        {
+            List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
+            Label UnPrizedLabel = generator.DefineLabel();
+            
+            for (int i = 0; i < codes.Count(); ++i)
+            {
+                Log.Message("" + i + ": " + codes[i].ToString());
+                if (codes[i].opcode == OpCodes.Ldarg_1) // Figure this out
+                {
+                    yield return new CodeInstruction(OpCodes.Ldarg_1);
+                    yield return new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(Pawn), "get_Name"));
+                    yield return new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(Name), "get_Numerical"));
+                    yield return new CodeInstruction(OpCodes.Brtrue_S, UnPrizedLabel);
+
+                    yield return new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(PrizedCompanions), nameof(PrizedCompanions.Instance)));
+                    yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(PrizedCompanions), nameof(PrizedCompanions.settings)));
+                    yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Settings), nameof(Settings.isActive)));
+                    yield return new CodeInstruction(OpCodes.Brfalse_S, UnPrizedLabel);
+
+                    yield return new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(PrizedCompanions), nameof(PrizedCompanions.Instance)));
+                    yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(PrizedCompanions), nameof(PrizedCompanions.settings)));
+                    yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Settings), nameof(Settings.isAlternate)));
+                    yield return new CodeInstruction(OpCodes.Brfalse_S, UnPrizedLabel);
+
+                    yield return new CodeInstruction(OpCodes.Ldc_I8, long.MinValue);
+                    yield return new CodeInstruction(OpCodes.Ret);
+
+                    codes[i].labels.Add(UnPrizedLabel);
+                }
+                yield return codes[i];
+            }
+        }
+
+        /*
+        private static List<Pawn> tmpAnimals = new List<Pawn>();
+        private static List<Pawn> tmpAnimalsMale = new List<Pawn>();
+        private static List<Pawn> tmpAnimalsMaleYoung = new List<Pawn>();
+        private static List<Pawn> tmpAnimalsFemale = new List<Pawn>();
+        private static List<Pawn> tmpAnimalsFemaleYoung = new List<Pawn>();
+        private static List<Pawn> tmpAnimalsPregnant = new List<Pawn>();
+        
+        static bool Prefix(ref List<Pawn> __result, ref bool ___cacheDirty, AutoSlaughterManager __instance, ref List<Pawn> ___animalsToSlaughterCached)
+        {
+            if (___cacheDirty)
+            {
                 try
                 {
                     ___animalsToSlaughterCached.Clear();
@@ -77,16 +127,16 @@ namespace Prized_Companions
                                         tmpAnimals.Add(spawnedColonyAnimal);
                                 }
                             }
-                            tmpAnimals.SortBy<Pawn, long>((Func<Pawn, long>)(a => a.ageTracker.AgeBiologicalTicks));
-                            tmpAnimalsMale.SortBy<Pawn, long>((Func<Pawn, long>)(a => a.ageTracker.AgeBiologicalTicks));
-                            tmpAnimalsMaleYoung.SortBy<Pawn, long>((Func<Pawn, long>)(a => a.ageTracker.AgeBiologicalTicks));
-                            tmpAnimalsFemale.SortBy<Pawn, long>((Func<Pawn, long>)(a => a.ageTracker.AgeBiologicalTicks));
-                            tmpAnimalsFemaleYoung.SortBy<Pawn, long>((Func<Pawn, long>)(a => a.ageTracker.AgeBiologicalTicks));
+                            tmpAnimals.SortBy<Pawn, long>((Func<Pawn, long>)(a => a.Name.Numerical || !PrizedCompanions.Instance.settings.isActive || !PrizedCompanions.Instance.settings.isAlternate ? a.ageTracker.AgeBiologicalTicks : long.MinValue));
+                            tmpAnimalsMale.SortBy<Pawn, long>((Func<Pawn, long>)(a => a.Name.Numerical ? a.ageTracker.AgeBiologicalTicks : long.MinValue));
+                            tmpAnimalsMaleYoung.SortBy<Pawn, long>((Func<Pawn, long>)(a => a.Name.Numerical ? a.ageTracker.AgeBiologicalTicks : long.MinValue));
+                            tmpAnimalsFemale.SortBy<Pawn, long>((Func<Pawn, long>)(a => a.Name.Numerical ? a.ageTracker.AgeBiologicalTicks : long.MinValue));
+                            tmpAnimalsFemaleYoung.SortBy<Pawn, long>((Func<Pawn, long>)(a => a.Name.Numerical ? a.ageTracker.AgeBiologicalTicks : long.MinValue));
                             if (config.allowSlaughterPregnant)
                             {
-                                tmpAnimalsPregnant.SortBy<Pawn, float>((Func<Pawn, float>)(a => -a.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.Pregnant).Severity));
-                                tmpAnimalsFemale.AddRange((IEnumerable<Pawn>) tmpAnimalsPregnant);
-                                tmpAnimals.AddRange((IEnumerable<Pawn>) tmpAnimalsPregnant);
+                                tmpAnimalsPregnant.SortBy<Pawn, float>((Func<Pawn, float>)(a => a.Name.Numerical ? -a.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.Pregnant).Severity : long.MinValue));
+                                tmpAnimalsFemale.AddRange((IEnumerable<Pawn>)tmpAnimalsPregnant);
+                                tmpAnimals.AddRange((IEnumerable<Pawn>)tmpAnimalsPregnant);
                             }
                             if (config.maxFemales != -1)
                             {
@@ -156,9 +206,9 @@ namespace Prized_Companions
                     tmpAnimalsMale.Clear();
                     tmpAnimalsFemale.Clear();
                 }
-                __result = ___animalsToSlaughterCached;
-                return false;
             }
-        }
+            __result = ___animalsToSlaughterCached;
+            return false;
+        }*/
     }
 }

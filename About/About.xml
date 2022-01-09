@@ -7,12 +7,15 @@
 	<supportedVersions>
 		<li>1.3</li>
 	</supportedVersions>
-	<description>Prevents any named animals from being included for consideration by the autoslaughterer. The autoslaughterer's population display will not include these animals in any way, so you will have more animals than it displays.
+	<description>Prevents any named animals from being included for consideration by the autoslaughterer. Optionally, Prized Companions may be included in animal counts if desired.
 	
 	Named animals can still be manually slaughtered for tough seasons and are still included in sales listings, but your prized animals and beloved pets will be spared from voracious butchers.
 	
 	===Save Game Compatability===
 	Prized Companions can be activated and deactivated midgame, however expect to need to update your autoslaughter numbers!
+	
+	===Mod Compatability===
+	Please let me know if conflicts arise. The mod should be highly compatible, but issues may arise with multiplayer mods- this is untested grounds.
 	</description>
 	
 	<modDependencies>
@@ -25,6 +28,6 @@
     </modDependencies>
 	
 	<loadAfter>
-        <li>UnlimitedHugs.HugsLib</li>
+        <li>brrainz.harmony</li>
     </loadAfter>
 </ModMetaData>
