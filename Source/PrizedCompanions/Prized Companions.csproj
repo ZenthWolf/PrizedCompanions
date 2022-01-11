@@ -55,7 +55,7 @@
     <Compile Include="Companion_Listing.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="PrizedCompanions.cs" />
-    <Compile Include="Patches\PCPreSorter.cs" />
+    <Compile Include="Patches\PrizedCompanionsCountOnDisplay.cs" />
     <Compile Include="Patches\PCPatcher.cs" />
     <Compile Include="Patches\PCNotifyNames.cs" />
     <Compile Include="Patches\PCAutoSlaughterPatch.cs" />

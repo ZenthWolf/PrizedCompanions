@@ -30,11 +30,11 @@ namespace Prized_Companions
 			listingCompanion.CheckboxLabeled((string)"Prized_Companions_ActivateCheckBox".Translate(), ref this.settings.isActive, (string)"Prized_Companions_Activator_TTip".Translate());
 			if (!this.settings.isActive)
 				_ = listingCompanion.Label("");
-			else if (this.settings.isAlternate)
+			else if (this.settings.isCounted)
 				_ = listingCompanion.Label((string)"Prized_Companions_Counted".Translate());
 			else
 				_ = listingCompanion.Label((string)"Prized_Companions_NotCounted".Translate());
-			listingCompanion.CheckboxLabeled((string)"Prized_Companions_CountCheckBox".Translate(), ref this.settings.isAlternate, (string)"Prized_Companions_Counter_TTip", !this.settings.isActive);
+			listingCompanion.CheckboxLabeled((string)"Prized_Companions_CountCheckBox".Translate(), ref this.settings.isCounted, (string)"Prized_Companions_Counter_TTip".Translate(), !this.settings.isActive);
 			listingCompanion.End();
 
 			this.settings.Update();

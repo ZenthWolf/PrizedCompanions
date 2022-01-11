@@ -8,22 +8,7 @@ namespace Prized_Companions
     {
         private static void Postfix(ref bool __result, Pawn animal)
         {
-            if (PrizedCompanions.Instance.settings.isActive && !PrizedCompanions.Instance.settings.isAlternate)
-            {
-                if (__result)
-                {
-                    __result = (animal.Name.Numerical);
-                }
-            }
-        }
-    }
-
-    [HarmonyPatch(typeof(AutoSlaughterManager), "CanAutoSlaughterNow")]
-    internal static class PrizedCompanionsCantBeSlaughterNowPatch
-    {
-        private static void Postfix(ref bool __result, Pawn animal)
-        {
-            if (PrizedCompanions.Instance.settings.isActive && PrizedCompanions.Instance.settings.isAlternate)
+            if (PrizedCompanions.Instance.settings.isActive && !PrizedCompanions.Instance.settings.isCounted)
             {
                 if (__result)
                 {

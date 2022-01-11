@@ -7,10 +7,10 @@ namespace Prized_Companions
 	public class Settings : ModSettings
 	{
 		public bool isActive = true;
-		public bool isAlternate = false;
+		public bool isCounted = false;
 
 		private bool wasActive = false;
-		private bool wasAlternate = false;
+		private bool wasCounted = false;
 
 		public void Update()
         {
@@ -20,9 +20,9 @@ namespace Prized_Companions
 				UpdateSlaughterers();
 
 			}
-			if(isAlternate ^ wasAlternate)
+			if(isCounted ^ wasCounted)
             {
-				wasAlternate = isAlternate;
+				wasCounted = isCounted;
 				UpdateSlaughterers();
 
 			}
@@ -43,7 +43,7 @@ namespace Prized_Companions
 		public override void ExposeData()
 		{
 			Scribe_Values.Look(ref this.isActive, "PrizeCompanionsIsActive");
-			Scribe_Values.Look(ref this.isAlternate, "PrizeCompanionsCountCompanions");
+			Scribe_Values.Look(ref this.isCounted, "PrizeCompanionsAreCounted");
 
 			base.ExposeData();
 		}

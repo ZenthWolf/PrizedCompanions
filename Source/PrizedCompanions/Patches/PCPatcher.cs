@@ -11,6 +11,7 @@ namespace Prized_Companions
             var harmony = new Harmony("ZenthWolf.PrizedCompanions");
             harmony.PatchAll();
 
+            /*
             for (int i = 0; i < 5; ++i)
             {
                 var animalSort_original = AccessTools.FirstMethod(
@@ -29,6 +30,7 @@ namespace Prized_Companions
             var animalFltSort_Transpiler = typeof(PrizedCompanionsPreSorter_Flt).GetMethod("Transpiler", AccessTools.all);
 
             harmony.Patch(animalFltSort_original, transpiler: new HarmonyMethod(animalFltSort_Transpiler));
+            */
         }
     }
 }

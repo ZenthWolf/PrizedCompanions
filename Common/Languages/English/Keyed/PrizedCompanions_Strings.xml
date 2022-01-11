@@ -14,7 +14,7 @@
 	
 	<Prized_Companions_Counted>Prized Companions are counted in total animal population (if not bonded).</Prized_Companions_Counted>
 	<Prized_Companions_NotCounted>Prized Companions are not counted amongst livestock.</Prized_Companions_NotCounted>
-	<Prized_Companions_CountCheckBox>Count Prized Companions on the autoslaughter tab (they will still be protected)</Prized_Companions_CountCheckBox>
+	<Prized_Companions_CountCheckBox>Count Prized Companions on the autoslaughter tab (they will still be protected)-Remember to update your quotas!</Prized_Companions_CountCheckBox>
 	
 	<Prized_Companions_Counter_TTip>Alternate method if you want total count easily.</Prized_Companions_Counter_TTip>
 </LanguageData>
