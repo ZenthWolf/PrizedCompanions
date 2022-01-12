@@ -272,7 +272,6 @@ namespace Prized_Companions
                 // Modify loop counters to include Prized Companions
                 else if (codes[i+1].operand != null && codes[i+1].operand.ToString().Contains("max"))
                 {
-                    Log.Message("Entered at i: " + i.ToString() + " , nextCounter: " + nextCounter.ToString() + " and firstFound being " + firstFound.ToString());
                     //Female Counter
                     if (nextCounter == 0)
                     {;
@@ -543,7 +542,7 @@ namespace Prized_Companions
 
                             else
                             {
-                                Log.Message("Presto chango");
+                                
                                 ++i;
                                 done = true;
 
