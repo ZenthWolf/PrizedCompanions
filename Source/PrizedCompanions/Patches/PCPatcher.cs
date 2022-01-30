@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using RimWorld;
 using Verse;
 
 namespace Prized_Companions
@@ -10,7 +11,6 @@ namespace Prized_Companions
         {
             var harmony = new Harmony("ZenthWolf.PrizedCompanions");
             harmony.PatchAll();
-
             /*
             for (int i = 0; i < 5; ++i)
             {
