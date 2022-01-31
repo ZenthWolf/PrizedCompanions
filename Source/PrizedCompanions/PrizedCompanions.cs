@@ -14,6 +14,7 @@ namespace Prized_Companions
             {
 				PrizedCompanions.Instance = this;
             }
+
 			this.settings = this.GetSettings<Settings>();
 		}
 

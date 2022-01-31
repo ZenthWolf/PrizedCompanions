@@ -237,13 +237,6 @@ namespace Prized_Companions
                 {
                     if (codes[i].opcode == OpCodes.Callvirt && codes[i].operand.ToString().Contains("End")) 
                     {
-                        Log.Message("Tests");
-                        //Log.Message(typeof(PCDialogueHeaderPatch).GetField("offset", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public).ToString());
-                        //Log.Message(typeof(Dialog_AutoSlaughter).GetField("viewRect", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).ToString());
-                        Log.Message(typeof(Rect).GetProperty("height", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance).GetGetMethod().ToString());
-                        Log.Message(typeof(Widgets).GetMethod("Checkbox", new Type[] { typeof(float), typeof(float), typeof(bool).MakeByRefType(), typeof(float), typeof(bool), typeof(bool), typeof(Texture2D), typeof(Texture2D) }).ToString());
-                        //Log.Message( .ToString());
-
                         yield return codes[i];
 
                         yield return new CodeInstruction(OpCodes.Call, typeof(Color).GetProperty("gray").GetGetMethod());
@@ -290,7 +283,8 @@ namespace Prized_Companions
 
             //Locals:
             int animalCount = 1;
-
+            //NEW locals
+            var helper = generator.DeclareLocal(typeof(bool));
             //Fields
             System.Reflection.FieldInfo bonded = Type.GetType("RimWorld.Dialog_AutoSlaughter+AnimalCountRecord, Assembly-CSharp").GetField("bonded", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
 
@@ -367,28 +361,39 @@ namespace Prized_Companions
                         yield return new CodeInstruction(OpCodes.Ldc_R4, 19f); //60-22 / 2
                         yield return new CodeInstruction(OpCodes.Callvirt, typeof(WidgetRow).GetMethod(nameof(WidgetRow.Gap)));
 
-                        yield return new CodeInstruction(OpCodes.Ldarg_3);
-                        yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(AutoSlaughterConfig), "allowSlaughterBonded"));
+                        yield return new CodeInstruction(OpCodes.Ldarg_3); //config
+                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PCSlaughterConfigPatch), "IsYoungestFirst"));
+                        // A priori value floats around until beq in usual case!
+                        yield return new CodeInstruction(OpCodes.Stloc, helper);
                         yield return new CodeInstruction(OpCodes.Ldloc_3);
                         yield return new CodeInstruction(OpCodes.Ldfld, row);
                         yield return new CodeInstruction(OpCodes.Callvirt, typeof(WidgetRow).GetProperty("FinalX").GetGetMethod());
                         yield return new CodeInstruction(OpCodes.Ldc_R4, 0f);
-                        yield return new CodeInstruction(OpCodes.Ldarg_3);
-                        yield return new CodeInstruction(OpCodes.Ldflda, AccessTools.Field(typeof(AutoSlaughterConfig), "allowSlaughterBonded"));
+                        //yield return new CodeInstruction(OpCodes.Ldarg_3); // Config
+                        //yield return new CodeInstruction(OpCodes.Ldflda, AccessTools.Field(typeof(AutoSlaughterConfig), "allowSlaughterBonded")); // isBonded (Address)
+                        yield return new CodeInstruction(OpCodes.Ldloca, helper);
                         yield return new CodeInstruction(OpCodes.Ldc_R4, 24f);
                         yield return new CodeInstruction(OpCodes.Ldc_I4_0);
                         yield return new CodeInstruction(OpCodes.Ldc_I4_1);
                         yield return new CodeInstruction(OpCodes.Ldnull);
                         yield return new CodeInstruction(OpCodes.Ldnull);
                         yield return new CodeInstruction(OpCodes.Call, typeof(Widgets).GetMethod("Checkbox", new Type[] { typeof(float), typeof(float), typeof(bool).MakeByRefType(), typeof(float), typeof(bool), typeof(bool), typeof(Texture2D), typeof(Texture2D) }));
-                        yield return new CodeInstruction(OpCodes.Ldarg_3);
-                        yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(AutoSlaughterConfig), "allowSlaughterBonded"));
+                        //yield return new CodeInstruction(OpCodes.Ldarg_3);
+                        //Compare against V_3 to see if changing -> Probably not most performant way to do this, but easiest to set up
+                        yield return new CodeInstruction(OpCodes.Ldloc, helper);
+                        yield return new CodeInstruction(OpCodes.Ldarg_3); // Config
+                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PCSlaughterConfigPatch), "IsYoungestFirst"));
                         yield return new CodeInstruction(OpCodes.Beq_S, codes[i].labels[0]);
                         
+                        //Recalc Animals as before
                         yield return new CodeInstruction(OpCodes.Ldarg_0);
                         yield return new CodeInstruction(OpCodes.Call, typeof(Dialog_AutoSlaughter).GetMethod("RecalculateAnimals",System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
+                        //Also update the cull logic
+                        yield return new CodeInstruction(OpCodes.Ldarg_3);
+                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PCSlaughterConfigPatch), "InvertCullLogic"));
 
                         yield return codes[i]; // EndGUI Group
+
 
                         doFirst = false;
                         done = true;
