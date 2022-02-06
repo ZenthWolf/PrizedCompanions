@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Companion_Listing.cs" />
     <Compile Include="Patches\PCDialogueGUIPatch.cs" />
+    <Compile Include="Patches\PCPregnancyNotifications.cs" />
     <Compile Include="Patches\PCSlaughterConfigPatch.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="PrizedCompanions.cs" />

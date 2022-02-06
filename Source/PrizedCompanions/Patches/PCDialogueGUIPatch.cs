@@ -82,13 +82,12 @@ namespace Prized_Companions
         {
             rect.y -= 24f;
             rect.height += 25;
-            offset = 932 + LabelWidth;
             rect.x += rect.width - 60;
             GUI.BeginGroup(rect);
             WidgetRow widgetRow = new WidgetRow(0.0f, 0.0f);
             TextAnchor anchor2 = Text.Anchor;
             Text.Anchor = TextAnchor.MiddleCenter;
-            widgetRow.Label((string)"\nYoungest\nFirst\n", 60, (string)"Look. I never said prizing animals as companions meant NOT killing the young children...".Translate(), 48f);
+            widgetRow.Label((string)"\nYoungest\nFirst\n", 60, (string)"Prized_Companions_GUI_TTip".Translate(), 48f);
             Text.Anchor = anchor2;
             GUI.EndGroup();
         }
@@ -107,25 +106,13 @@ namespace Prized_Companions
             {
                 if(doDraw)
                 {
-                    if (codes[i].opcode == OpCodes.Callvirt && codes[i].operand.ToString().Contains("End")) 
+                    if (codes[i].opcode == OpCodes.Call && codes[i].operand.ToString().Contains("EndScrollView")) 
                     {
-                        yield return codes[i];
-
-                        yield return new CodeInstruction(OpCodes.Call, typeof(Color).GetProperty("gray").GetGetMethod());
-                        yield return new CodeInstruction(OpCodes.Call, typeof(GUI).GetProperty("color").GetSetMethod());
-
-                        //yield return new CodeInstruction(OpCodes.Ldsfld, typeof(PCDialogueHeaderPatch).GetField("offset", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance));
-                        yield return new CodeInstruction(OpCodes.Ldc_R4, 994f);
-                        yield return new CodeInstruction(OpCodes.Ldc_R4, 0.0f);
                         yield return new CodeInstruction(OpCodes.Ldarg_0); //this
-                        yield return new CodeInstruction(OpCodes.Ldflda, typeof(Dialog_AutoSlaughter).GetField("viewRect", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
-                        yield return new CodeInstruction(OpCodes.Callvirt, typeof(Rect).GetProperty("height", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance).GetGetMethod());
-                        yield return new CodeInstruction(OpCodes.Ldc_R4, 6f);
-                        yield return new CodeInstruction(OpCodes.Sub);
-                        yield return new CodeInstruction(OpCodes.Call, typeof(Widgets).GetMethod(nameof(Widgets.DrawLineVertical)));
+                        yield return new CodeInstruction(OpCodes.Ldfld, typeof(Dialog_AutoSlaughter).GetField("viewRect", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
+                        yield return new CodeInstruction(OpCodes.Call, typeof(PCDrawDelimiter).GetMethod("Injection", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic));
 
-                        yield return new CodeInstruction(OpCodes.Call, typeof(Color).GetProperty("white").GetGetMethod());
-                        yield return new CodeInstruction(OpCodes.Call, typeof(GUI).GetProperty("color").GetSetMethod());
+                        yield return codes[i];
 
                         doDraw = false;
                         continue;
@@ -145,16 +132,22 @@ namespace Prized_Companions
             }
 
             }
+
+        static void Injection(Rect ___viewRect)
+        {
+            GUI.color = Color.gray;
+            Widgets.DrawLineVertical(___viewRect.xMin+___viewRect.width - 72, 0, ___viewRect.height - 8f);
+            GUI.color = Color.white;
+        }
     }
-            [HarmonyPatch(typeof(Dialog_AutoSlaughter), "DoAnimalRow")]
+
+    [HarmonyPatch(typeof(Dialog_AutoSlaughter), "DoAnimalRow")]
     internal static class PCDialogueRowPatch
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
 
-            //Locals:
-            int animalCount = 1;
             //NEW locals
             var helper = generator.DeclareLocal(typeof(bool));
             //Fields
@@ -188,81 +181,17 @@ namespace Prized_Companions
                         yield return codes[i];
                         ++i;
 
-                        CodeInstruction jumpTarg = new CodeInstruction(OpCodes.Ldloc_3);
+                        CodeInstruction jumpTarg = new CodeInstruction(OpCodes.Ldloca, 3);
                         jumpTarg.labels.Add(newLabel);
                         yield return jumpTarg;
-                        yield return new CodeInstruction(OpCodes.Ldfld, row);
-                        yield return new CodeInstruction(OpCodes.Ldc_R4, 52f);
-                        yield return new CodeInstruction(OpCodes.Callvirt, typeof(WidgetRow).GetMethod(nameof(WidgetRow.Gap)));
-
-                        /*
-                        yield return new CodeInstruction(OpCodes.Ldc_I4_4);
-                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Property(typeof(Text), "Anchor").GetSetMethod());
-                        
-                        yield return new CodeInstruction(OpCodes.Ldloc_3);
-                        yield return new CodeInstruction(OpCodes.Ldfld, row);
-                        yield return new CodeInstruction(OpCodes.Ldloca_S, animalCount);
-                        yield return new CodeInstruction(OpCodes.Ldflda, bonded);
-                        yield return new CodeInstruction(OpCodes.Call, typeof(int).GetMethod("ToString", new Type[] { }));
-                        yield return new CodeInstruction(OpCodes.Ldc_R4, 60f);
-                        yield return new CodeInstruction(OpCodes.Ldnull);
-                        yield return new CodeInstruction(OpCodes.Ldc_R4, -1f);
-                        yield return new CodeInstruction(OpCodes.Callvirt, typeof(WidgetRow).GetMethod("Label"));
-                        yield return new CodeInstruction(OpCodes.Pop);
-                        */
-                        yield return new CodeInstruction(OpCodes.Ldc_I4_0);
-                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Property(typeof(Text), "Anchor").GetSetMethod());
-
-                        /*Draw?     leaves 6 px gaps which can't be resolved here.
-                        yield return new CodeInstruction(OpCodes.Call, typeof(Color).GetProperty("gray").GetGetMethod());
-                        yield return new CodeInstruction(OpCodes.Call, typeof(GUI).GetProperty("color").GetSetMethod());
-
-                        yield return new CodeInstruction(OpCodes.Ldloc_3);
-                        yield return new CodeInstruction(OpCodes.Ldfld, row);
-                        yield return new CodeInstruction(OpCodes.Callvirt, typeof(WidgetRow).GetProperty("FinalX").GetGetMethod());
-                        yield return new CodeInstruction(OpCodes.Ldc_R4, -3.0f);
-                        yield return new CodeInstruction(OpCodes.Ldc_R4, 30f);
-                        yield return new CodeInstruction(OpCodes.Call, typeof(Widgets).GetMethod(nameof(Widgets.DrawLineVertical)));
-
-                        yield return new CodeInstruction(OpCodes.Call, typeof(Color).GetProperty("white").GetGetMethod());
-                        yield return new CodeInstruction(OpCodes.Call, typeof(GUI).GetProperty("color").GetSetMethod());
-                        //Draw?*/
-
-                        yield return new CodeInstruction(OpCodes.Ldloc_3);
-                        yield return new CodeInstruction(OpCodes.Ldfld, row);
-                        yield return new CodeInstruction(OpCodes.Ldc_R4, 19f); //60-22 / 2
-                        yield return new CodeInstruction(OpCodes.Callvirt, typeof(WidgetRow).GetMethod(nameof(WidgetRow.Gap)));
-
-                        yield return new CodeInstruction(OpCodes.Ldarg_3); //config
-                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PCSlaughterConfigPatch), "IsYoungestFirst"));
-                        // A priori value floats around until beq in usual case!
-                        yield return new CodeInstruction(OpCodes.Stloc, helper);
-                        yield return new CodeInstruction(OpCodes.Ldloc_3);
-                        yield return new CodeInstruction(OpCodes.Ldfld, row);
-                        yield return new CodeInstruction(OpCodes.Callvirt, typeof(WidgetRow).GetProperty("FinalX").GetGetMethod());
-                        yield return new CodeInstruction(OpCodes.Ldc_R4, 0f);
-                        //yield return new CodeInstruction(OpCodes.Ldarg_3); // Config
-                        //yield return new CodeInstruction(OpCodes.Ldflda, AccessTools.Field(typeof(AutoSlaughterConfig), "allowSlaughterBonded")); // isBonded (Address)
-                        yield return new CodeInstruction(OpCodes.Ldloca, helper);
-                        yield return new CodeInstruction(OpCodes.Ldc_R4, 24f);
-                        yield return new CodeInstruction(OpCodes.Ldc_I4_0);
-                        yield return new CodeInstruction(OpCodes.Ldc_I4_1);
-                        yield return new CodeInstruction(OpCodes.Ldnull);
-                        yield return new CodeInstruction(OpCodes.Ldnull);
-                        yield return new CodeInstruction(OpCodes.Call, typeof(Widgets).GetMethod("Checkbox", new Type[] { typeof(float), typeof(float), typeof(bool).MakeByRefType(), typeof(float), typeof(bool), typeof(bool), typeof(Texture2D), typeof(Texture2D) }));
-                        //yield return new CodeInstruction(OpCodes.Ldarg_3);
-                        //Compare against V_3 to see if changing -> Probably not most performant way to do this, but easiest to set up
-                        yield return new CodeInstruction(OpCodes.Ldloc, helper);
-                        yield return new CodeInstruction(OpCodes.Ldarg_3); // Config
-                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PCSlaughterConfigPatch), "IsYoungestFirst"));
-                        yield return new CodeInstruction(OpCodes.Beq_S, codes[i].labels[0]);
-                        
-                        //Recalc Animals as before
-                        yield return new CodeInstruction(OpCodes.Ldarg_0);
-                        yield return new CodeInstruction(OpCodes.Call, typeof(Dialog_AutoSlaughter).GetMethod("RecalculateAnimals",System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
-                        //Also update the cull logic
+                        yield return new CodeInstruction(OpCodes.Ldflda, row);
                         yield return new CodeInstruction(OpCodes.Ldarg_3);
-                        yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PCSlaughterConfigPatch), "InvertCullLogic"));
+                        yield return new CodeInstruction(OpCodes.Ldarga, 1);
+                        yield return new CodeInstruction(OpCodes.Call, typeof(PCDialogueRowPatch).GetMethod("PCRowElement", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static));
+                        yield return new CodeInstruction(OpCodes.Brfalse, codes[i].labels[0]);
+
+                        yield return new CodeInstruction(OpCodes.Ldarg_0);
+                        yield return new CodeInstruction(OpCodes.Call, typeof(Dialog_AutoSlaughter).GetMethod("RecalculateAnimals", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
 
                         yield return codes[i]; // EndGUI Group
 
@@ -282,6 +211,23 @@ namespace Prized_Companions
                     yield return codes[i];
                 }
             }
+        }
+
+        static bool PCRowElement(ref WidgetRow row, AutoSlaughterConfig config, ref Map map)
+        {
+            row.Gap(52f);
+            Text.Anchor = TextAnchor.UpperLeft;
+            row.Gap(19f);//60-22 / 2
+            bool isYoungestFirst = config.IsYoungestFirst();
+            bool wasYoungestFirst = isYoungestFirst;
+            Widgets.Checkbox(row.FinalX, 0.0f, ref isYoungestFirst, paintable: true);
+            if (isYoungestFirst ^ wasYoungestFirst)
+            {
+                config.InvertCullLogic();
+                map.autoSlaughterManager.Notify_ConfigChanged();
+                return true;
+            }
+            else return false;
         }
     }
 }

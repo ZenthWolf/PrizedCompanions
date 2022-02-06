@@ -45,10 +45,15 @@ namespace Prized_Companions
             Label whileMaleY = generator.DefineLabel();
             Label whileTot = generator.DefineLabel();
 
+            //Age Inversion Labels
+            Label oldestFirst = generator.DefineLabel();
+            Label youngestFirst = generator.DefineLabel();
+
             //patch load
             bool zeroPrizeCounters = true;
             bool injectPrizeCounter = true;
             bool endLoop = true;
+            bool invertCullAge = true;
 
             //Next while loop to look for
             int nextCounter = 0;
@@ -263,6 +268,51 @@ namespace Prized_Companions
                         endLoop = false;
 
                         yield return codes[i];
+                        continue;
+                    }
+                    yield return codes[i];
+                    continue;
+                }
+
+                else if(invertCullAge)
+                {
+                    //Picks out the start of the sortings
+                    if(codes[i].operand != null && codes[i].operand.ToString().Contains("tmpAnimals"))
+                    {
+                        var newSortStart = new CodeInstruction(OpCodes.Ldloc_1);
+                        foreach( Label l in codes[i].labels)
+                            newSortStart.labels.Add(l);
+                        yield return newSortStart;
+                        yield return new CodeInstruction(OpCodes.Call, typeof(PCSlaughterConfigPatch).GetMethod("IsYoungestFirst", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static));
+                        yield return new CodeInstruction(OpCodes.Brfalse_S, oldestFirst);
+
+                        var bFlags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static;
+                        yield return new CodeInstruction(OpCodes.Ldsflda, typeof(AutoSlaughterManager).GetField("tmpAnimals", bFlags));
+                        yield return new CodeInstruction(OpCodes.Ldsflda, typeof(AutoSlaughterManager).GetField("tmpAnimalsMale", bFlags));
+                        yield return new CodeInstruction(OpCodes.Ldsflda, typeof(AutoSlaughterManager).GetField("tmpAnimalsMaleYoung", bFlags));
+                        yield return new CodeInstruction(OpCodes.Ldsflda, typeof(AutoSlaughterManager).GetField("tmpAnimalsFemale", bFlags));
+                        yield return new CodeInstruction(OpCodes.Ldsflda, typeof(AutoSlaughterManager).GetField("tmpAnimalsFemaleYoung", bFlags));
+                        yield return new CodeInstruction(OpCodes.Call, typeof(PrizedCompanionsCountOnDisplay).GetMethod("AltSorter", bFlags));
+                        yield return new CodeInstruction(OpCodes.Br_S, youngestFirst);
+
+
+                        var freshcode = codes[i].Clone();
+                        freshcode.labels.Add(oldestFirst);
+                        yield return freshcode;
+                        ++i;
+
+                        Log.Message("[PrizedCompanions] Method name checks: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                        while (codes[i].opcode != OpCodes.Ldloc_1)
+                        {
+                            Log.Message(codes[i].ToString());
+                            yield return codes[i];
+                            ++i;
+                        }
+                        Log.Message("D O N E");
+
+                        codes[i].labels.Add(youngestFirst);
+                        yield return codes[i];
+                        invertCullAge = false;
                         continue;
                     }
                     yield return codes[i];
@@ -566,6 +616,17 @@ namespace Prized_Companions
                     yield return codes[i];
                 }
             }
+        }
+
+        private static void AltSorter(ref List<Pawn> tmpAnimals, ref List<Pawn> tmpAnimalsMale, ref List<Pawn> tmpAnimalsMaleYoung,
+            ref List<Pawn> tmpAnimalsFemale, ref List<Pawn> tmpAnimalsFemaleYoung)
+        {
+            Log.Message("[Prized Companions] R e v e r s i n g . . . ");
+            tmpAnimals.SortBy<Pawn, long>((Func<Pawn, long>)(a => -a.ageTracker.AgeBiologicalTicks));
+            tmpAnimalsMale.SortBy<Pawn, long>((Func<Pawn, long>)(a => -a.ageTracker.AgeBiologicalTicks));
+            tmpAnimalsMaleYoung.SortBy<Pawn, long>((Func<Pawn, long>)(a => -a.ageTracker.AgeBiologicalTicks));
+            tmpAnimalsFemale.SortBy<Pawn, long>((Func<Pawn, long>)(a => -a.ageTracker.AgeBiologicalTicks));
+            tmpAnimalsFemaleYoung.SortBy<Pawn, long>((Func<Pawn, long>)(a => -a.ageTracker.AgeBiologicalTicks));
         }
     }
 

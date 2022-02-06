@@ -17,4 +17,7 @@
 	<Prized_Companions_CountCheckBox>Count Prized Companions on the autoslaughter tab (they will still be protected)-Remember to update your quotas!</Prized_Companions_CountCheckBox>
 	
 	<Prized_Companions_Counter_TTip>Alternate method if you want total count easily.</Prized_Companions_Counter_TTip>
+	
+	<!-- GUI -->
+	<Prized_Companions_GUI_TTip>Prized Companions allow you to reverse age ordering of slaughtering. Check if you want the animal to be slaughtered youngest first.</Prized_Companions_GUI_TTip>
 </LanguageData>
