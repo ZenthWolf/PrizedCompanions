@@ -13,7 +13,7 @@ namespace Prized_Companions
     public static class PCSlaughterConfigPatch
     {
         public static readonly HashSet<AutoSlaughterConfig> youngestFirst = new HashSet<AutoSlaughterConfig>();
-        public static void Postfix(AutoSlaughterConfig __instance)
+        private static void Postfix(AutoSlaughterConfig __instance)
         {
 
             if (Scribe.mode == LoadSaveMode.Saving)

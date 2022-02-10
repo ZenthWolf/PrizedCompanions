@@ -301,14 +301,11 @@ namespace Prized_Companions
                         yield return freshcode;
                         ++i;
 
-                        Log.Message("[PrizedCompanions] Method name checks: ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                         while (codes[i].opcode != OpCodes.Ldloc_1)
                         {
-                            Log.Message(codes[i].ToString());
                             yield return codes[i];
                             ++i;
                         }
-                        Log.Message("D O N E");
 
                         codes[i].labels.Add(youngestFirst);
                         yield return codes[i];

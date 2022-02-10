@@ -10,27 +10,43 @@ namespace Prized_Companions
         static PrizedCompanionsMain()
         {
             var harmony = new Harmony("ZenthWolf.PrizedCompanions");
-            harmony.PatchAll();
-            /*
-            for (int i = 0; i < 5; ++i)
-            {
-                var animalSort_original = AccessTools.FirstMethod(
-                    AccessTools.FirstInner(typeof(AutoSlaughterManager), inner => inner.Name.Contains("<>c")),
-                    method => method.Name.Contains("b__11_"+i.ToString()));
+            var PatchFlags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static;
+            var nonpublicFlags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
 
-                var animalSort_Transpiler = typeof(PrizedCompanionsPreSorter).GetMethod("Transpiler", AccessTools.all);
+            //Always patched
+            harmony.Patch(typeof(AutoSlaughterManager).GetMethod("CanEverAutoSlaughter"),
+                postfix: new HarmonyMethod(typeof(PrizedCompanionsCantBeSlaughteredPatch).GetMethod("Postfix", PatchFlags)));
+            harmony.Patch(typeof(Dialog_NamePawn).GetMethod("DoWindowContents"),
+                postfix: new HarmonyMethod(typeof(PrizedCompanionsNamedNotification).GetMethod("Postfix", PatchFlags)));
 
-                harmony.Patch(animalSort_original, transpiler: new HarmonyMethod(animalSort_Transpiler));
-            }
-            
-            var animalFltSort_original = AccessTools.FirstMethod(
-                AccessTools.FirstInner(typeof(AutoSlaughterManager), inner => inner.Name.Contains("<>c")),
-                method => method.Name.Contains("b__11_5"));
+            //Pregnancy-related notifications to update list
+            harmony.Patch(typeof(HediffComp_MessageAfterTicks).GetMethod("CompPostTick"),
+                transpiler: new HarmonyMethod(typeof(PCPregnancyNotifications).GetMethod("Transpiler", PatchFlags)));
+            harmony.Patch(typeof(Hediff_Pregnant).GetMethod("Miscarry", nonpublicFlags),
+                postfix: new HarmonyMethod(typeof(PCMiscarryyNotifications).GetMethod("Postfix", PatchFlags)));
+            harmony.Patch(typeof(Hediff_Pregnant).GetMethod("DoBirthSpawn"),
+                postfix: new HarmonyMethod(typeof(PCBirthNotifications).GetMethod("Postfix", PatchFlags)));
 
-            var animalFltSort_Transpiler = typeof(PrizedCompanionsPreSorter_Flt).GetMethod("Transpiler", AccessTools.all);
+            //Count Prized Animals
+            harmony.Patch(typeof(AutoSlaughterManager).GetMethod("get_AnimalsToSlaughter"),
+                transpiler: new HarmonyMethod(typeof(PrizedCompanionsCountOnDisplay).GetMethod("Transpiler", PatchFlags)));
 
-            harmony.Patch(animalFltSort_original, transpiler: new HarmonyMethod(animalFltSort_Transpiler));
-            */
+            //YoungestFirst Slaughter Logic
+            //flags needed for some arcane purpose
+            harmony.Patch(typeof(AutoSlaughterConfig).GetMethod("ExposeData"),
+                postfix: new HarmonyMethod(typeof(PCSlaughterConfigPatch).GetMethod("Postfix", PatchFlags)));
+
+            //Youngest First GUId
+            harmony.Patch(typeof(Dialog_AutoSlaughter).GetMethod("CalculateLabelWidth", nonpublicFlags),
+                postfix: new HarmonyMethod(typeof(PCLabelWidth).GetMethod("Postfix", PatchFlags)));
+            harmony.Patch(typeof(Dialog_AutoSlaughter).GetMethod("get_InitialSize"),
+                postfix: new HarmonyMethod(typeof(PCDialogueResize).GetMethod("Postfix", PatchFlags)));
+            harmony.Patch(typeof(Dialog_AutoSlaughter).GetMethod("DoAnimalHeader", nonpublicFlags),
+                transpiler: new HarmonyMethod(typeof(PCDialogueHeaderPatch).GetMethod("Transpiler", PatchFlags)));
+            harmony.Patch(typeof(Dialog_AutoSlaughter).GetMethod("DoWindowContents"),
+                transpiler: new HarmonyMethod(typeof(PCDrawDelimiter).GetMethod("Transpiler", PatchFlags)));
+            harmony.Patch(typeof(Dialog_AutoSlaughter).GetMethod("DoAnimalRow", nonpublicFlags),
+                transpiler: new HarmonyMethod(typeof(PCDialogueRowPatch).GetMethod("Transpiler", PatchFlags)));
         }
     }
 }

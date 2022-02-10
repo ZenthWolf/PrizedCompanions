@@ -15,7 +15,7 @@ namespace Prized_Companions
     // Originally- calculated from the window rect
     // Now subtract the same amount as added to include new row!
     [HarmonyPatch(typeof(Dialog_AutoSlaughter), "CalculateLabelWidth")]
-    internal static class PCOhNo
+    internal static class PCLabelWidth
     {
         private static void Postfix(ref float __result)
         {

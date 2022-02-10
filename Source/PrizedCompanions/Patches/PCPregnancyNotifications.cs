@@ -38,11 +38,8 @@ namespace Prized_Companions
                         yield return codes[i];
 
                         yield return new CodeInstruction(OpCodes.Ldarg_0);
-                        var pubFlag = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance;
-                        yield return new CodeInstruction(OpCodes.Call, typeof(HediffComp).GetProperty("Pawn", pubFlag).GetGetMethod());
-                        yield return new CodeInstruction(OpCodes.Call, typeof(Thing).GetProperty("Map", pubFlag).GetGetMethod());
-                        yield return new CodeInstruction(OpCodes.Ldfld, typeof(Map).GetField("autoSlaughterManager", pubFlag));
-                        yield return new CodeInstruction(OpCodes.Callvirt, typeof(AutoSlaughterManager).GetMethod("Notify_PawnSpawned", pubFlag));
+                        var bFlags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static;
+                        yield return new CodeInstruction(OpCodes.Call, typeof(PCPregnancyNotifications).GetMethod("NotifyPregnant", bFlags));
 
                         notifySlaughterer = false;
                         done = true;
@@ -58,9 +55,18 @@ namespace Prized_Companions
                 }
             }
         }
+
+        static private void NotifyPregnant(HediffComp_MessageAfterTicks that)
+        {
+            if (that.parent as Hediff_Pregnant != null)
+            {
+                if(that.Pawn != null)
+                    that.Pawn.Map.autoSlaughterManager.Notify_PawnSpawned();
+            }
+        }
     }
 
-    /// <summary>  DoBirthSpawn
+    /// <summary> 
     /// Notify autoslaughters when animal miscarries
     /// </summary>
     [HarmonyPatch(typeof(Hediff_Pregnant), "Miscarry")]
@@ -72,7 +78,7 @@ namespace Prized_Companions
         }
     }
 
-    /// <summary>  DoBirthSpawn
+    /// <summary> 
     /// Notify autoslaughters when animal births
     /// Seems vanilla did no such check?
     /// </summary>
