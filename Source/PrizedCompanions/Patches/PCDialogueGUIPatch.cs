@@ -14,7 +14,6 @@ namespace Prized_Companions
     // Alter the width of the firtst column label
     // Originally- calculated from the window rect
     // Now subtract the same amount as added to include new row!
-    [HarmonyPatch(typeof(Dialog_AutoSlaughter), "CalculateLabelWidth")]
     internal static class PCLabelWidth
     {
         private static void Postfix(ref float __result)
@@ -27,7 +26,6 @@ namespace Prized_Companions
     // Make UI window larger to include space for new column
     // Originally- Set value
     // Now add space for new column- same amount must adjust initial label size!
-    [HarmonyPatch(typeof(Dialog_AutoSlaughter), "get_InitialSize")]
     internal static class PCDialogueResize
     {
         private static void Postfix(ref Vector2 __result)
@@ -38,7 +36,6 @@ namespace Prized_Companions
         }
     }
 
-    [HarmonyPatch(typeof(Dialog_AutoSlaughter), "DoAnimalHeader")]
     internal static class PCDialogueHeaderPatch
     {
         static float offset;
@@ -93,7 +90,6 @@ namespace Prized_Companions
         }
     }
 
-    [HarmonyPatch(typeof(Dialog_AutoSlaughter), "DoWindowContents")]
     internal static class PCDrawDelimiter
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
@@ -141,7 +137,6 @@ namespace Prized_Companions
         }
     }
 
-    [HarmonyPatch(typeof(Dialog_AutoSlaughter), "DoAnimalRow")]
     internal static class PCDialogueRowPatch
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)

@@ -12,7 +12,6 @@ namespace Prized_Companions
     /// <summary>
     /// Notify autoslaughters when animal is known to be pregnant
     /// </summary>
-    [HarmonyPatch(typeof(HediffComp_MessageAfterTicks), "CompPostTick")]
     internal static class PCPregnancyNotifications
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
@@ -69,7 +68,6 @@ namespace Prized_Companions
     /// <summary> 
     /// Notify autoslaughters when animal miscarries
     /// </summary>
-    [HarmonyPatch(typeof(Hediff_Pregnant), "Miscarry")]
     internal static class PCMiscarryyNotifications
     {
         static void Postfix(Pawn ___pawn)
@@ -82,7 +80,6 @@ namespace Prized_Companions
     /// Notify autoslaughters when animal births
     /// Seems vanilla did no such check?
     /// </summary>
-    [HarmonyPatch(typeof(Hediff_Pregnant), "DoBirthSpawn")]
     internal static class PCBirthNotifications
     {
         static void Postfix(Pawn ___pawn)
