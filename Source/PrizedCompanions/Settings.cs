@@ -12,6 +12,10 @@ namespace Prized_Companions
 		private bool wasActive = false;
 		private bool wasCounted = false;
 
+		private bool liteMode = false;
+		public bool liteModeSetter = false;
+		private bool doGUI = true;
+		public bool doGUISetter = true;
 		public void Update()
         {
 			if(isActive ^ wasActive)
@@ -40,10 +44,19 @@ namespace Prized_Companions
 			}
 		}
 
+		public bool IsLiteMode => liteMode;
+		public bool IsDoGUI => doGUI;
+
 		public override void ExposeData()
 		{
 			Scribe_Values.Look(ref this.isActive, "PrizeCompanionsIsActive");
 			Scribe_Values.Look(ref this.isCounted, "PrizeCompanionsAreCounted");
+
+			Scribe_Values.Look(ref this.liteModeSetter, "PrizeCompanionsLiteMode", false);
+			Scribe_Values.Look(ref this.doGUISetter, "PrizeCompanionsUseGUI", true);
+
+			liteMode = liteModeSetter;
+			doGUI = doGUISetter;
 
 			base.ExposeData();
 		}

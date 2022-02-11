@@ -14,7 +14,6 @@ using System.Reflection.Emit;
 // This  might as well have been a destructive prefix probably.
 namespace Prized_Companions
 {
-    [HarmonyPatch(typeof(AutoSlaughterManager), "get_AnimalsToSlaughter")]
     internal static class PrizedCompanionsCountOnDisplay
     {
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
@@ -119,13 +118,6 @@ namespace Prized_Companions
                         yield return new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(Name), "get_Numerical"));
                         yield return new CodeInstruction(OpCodes.Brtrue, NotPrized);
 
-                        //++PrizedCounter
-  //                      Diverted to simplify pregnancy options
-  //                      yield return new CodeInstruction(OpCodes.Ldloc, PrizedCounter);
-  //                      yield return new CodeInstruction(OpCodes.Ldc_I4_1);
-  //                      yield return new CodeInstruction(OpCodes.Add);
-  //                      yield return new CodeInstruction(OpCodes.Stloc, PrizedCounter);
-
                         //Is Animal Male
                         yield return new CodeInstruction(OpCodes.Ldloc_S, spawnedColonyAnimal);
                         yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Pawn), "gender"));
@@ -138,7 +130,6 @@ namespace Prized_Companions
                         yield return new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(Pawn_AgeTracker), "get_CurLifeStage"));
                         yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(LifeStageDef), nameof(LifeStageDef.reproductive)));
                         yield return new CodeInstruction(OpCodes.Brfalse_S, MaleYoung);
-
 
                         //++PrizedCounterMale
                         yield return new CodeInstruction(OpCodes.Ldloc, PrizedCounterMale);
@@ -242,9 +233,7 @@ namespace Prized_Companions
                         yield return new CodeInstruction(OpCodes.Add);
                         yield return new CodeInstruction(OpCodes.Stloc, PrizedCounter);
                         yield return new CodeInstruction(OpCodes.Br, EndCounterLoop);
-
                         //End Prized Check
-                        // yield return new CodeInstruction(OpCodes.Br);
 
                         //Modified NEXT line
                         ++i;
@@ -589,7 +578,6 @@ namespace Prized_Companions
 
                             else
                             {
-                                
                                 ++i;
                                 done = true;
 
@@ -618,7 +606,6 @@ namespace Prized_Companions
         private static void AltSorter(ref List<Pawn> tmpAnimals, ref List<Pawn> tmpAnimalsMale, ref List<Pawn> tmpAnimalsMaleYoung,
             ref List<Pawn> tmpAnimalsFemale, ref List<Pawn> tmpAnimalsFemaleYoung)
         {
-            Log.Message("[Prized Companions] R e v e r s i n g . . . ");
             tmpAnimals.SortBy<Pawn, long>((Func<Pawn, long>)(a => -a.ageTracker.AgeBiologicalTicks));
             tmpAnimalsMale.SortBy<Pawn, long>((Func<Pawn, long>)(a => -a.ageTracker.AgeBiologicalTicks));
             tmpAnimalsMaleYoung.SortBy<Pawn, long>((Func<Pawn, long>)(a => -a.ageTracker.AgeBiologicalTicks));
@@ -626,43 +613,4 @@ namespace Prized_Companions
             tmpAnimalsFemaleYoung.SortBy<Pawn, long>((Func<Pawn, long>)(a => -a.ageTracker.AgeBiologicalTicks));
         }
     }
-
-    //presorter ends up not being useful for this part :(
-    // Stashed here as a relic on the excuse that I might use it to reverse slaughter logic latger
-    /*
-        // Adds conditions to sorting autoslaughter temp lists
-        internal static class PrizedCompanionsPreSorter
-        {
-            static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
-            {
-                List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
-                Label UnPrizedLabel = generator.DefineLabel();
-
-                yield return new CodeInstruction(OpCodes.Ldarg_1);
-                yield return new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(Pawn), "get_Name"));
-                yield return new CodeInstruction(OpCodes.Callvirt, AccessTools.Method(typeof(Name), "get_Numerical"));
-                yield return new CodeInstruction(OpCodes.Brtrue_S, UnPrizedLabel);
-
-                yield return new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(PrizedCompanions), nameof(PrizedCompanions.Instance)));
-                yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(PrizedCompanions), nameof(PrizedCompanions.settings)));
-                yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Settings), nameof(Settings.isActive)));
-                yield return new CodeInstruction(OpCodes.Brfalse_S, UnPrizedLabel);
-
-                yield return new CodeInstruction(OpCodes.Ldsfld, AccessTools.Field(typeof(PrizedCompanions), nameof(PrizedCompanions.Instance)));
-                yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(PrizedCompanions), nameof(PrizedCompanions.settings)));
-                yield return new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Settings), nameof(Settings.isAlternate)));
-                yield return new CodeInstruction(OpCodes.Brfalse_S, UnPrizedLabel);
-
-                yield return new CodeInstruction(OpCodes.Ldc_I8, long.MinValue);
-                yield return new CodeInstruction(OpCodes.Ret);
-
-                codes[0].labels.Add(UnPrizedLabel);
-
-                for (int i = 0; i < codes.Count(); ++i)
-                {
-                    yield return codes[i];
-                }
-            }
-*/
-
 }

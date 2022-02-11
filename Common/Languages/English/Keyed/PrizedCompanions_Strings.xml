@@ -18,6 +18,23 @@
 	
 	<Prized_Companions_Counter_TTip>Alternate method if you want total count easily.</Prized_Companions_Counter_TTip>
 	
+	
+	<Prized_Companions_PatchOptions>Patching Options</Prized_Companions_PatchOptions>
+	<Prized_Companions_Patch_Descriptor>Use below to limit the patching done in case of incompatability. Please alert me to compatability issues resolved by using Lite Mode.</Prized_Companions_Patch_Descriptor>
+	
+	<Prized_Companions_RestartNecessary>Changes require a restart to take effect.</Prized_Companions_RestartNecessary>
+	
+	<Prized_Companions_LiteModeOff>Full features are available.</Prized_Companions_LiteModeOff>
+	<Prized_Companions_LiteModeOn>Running in Lite mode- most features are disabled.</Prized_Companions_LiteModeOn>
+	
+	<Prized_Companions_LiteMode>Activate Lite Mode.</Prized_Companions_LiteMode>
+	<Prized_Companions_LiteMode_TTip>Requires Restart. Intended as a backup in case an incompatibility arises, but will remove most functions.</Prized_Companions_LiteMode_TTip>
+	
+	<Prized_Companions_GUIAdded>GUI column added to Autoslaughter menu.</Prized_Companions_GUIAdded>
+	<Prized_Companins_GUIOff>GUI Element off, this feature is disabled.</Prized_Companins_GUIOff>
+	
+	<Prized_Companions_DoGUI>Enables GUI add-on allowing autoslaughter to work youngest first.</Prized_Companions_DoGUI>
+	<Prized_Companions_DoGUI_TTip>Requires restart. Feature meant to promote gathering of wool, eggs, and milk, or for training large amounts of animals.</Prized_Companions_DoGUI_TTip>
 	<!-- GUI -->
 	<Prized_Companions_GUI_TTip>Prized Companions allow you to reverse age ordering of slaughtering. Check if you want the animal to be slaughtered youngest first.</Prized_Companions_GUI_TTip>
 </LanguageData>
