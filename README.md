@@ -4,6 +4,8 @@ Modding protections into Rimworld Pets
 ---Base Functionality---
 Prevents any named animals from being included for consideration by the autoslaughterer. Optionally, Prized Companions may be included in animal counts if desired- mind that you update your slaughter quotas!
 
+By default, Prized Companions are not counted in the Autoslaughter dialogue box. If you prefer to see animal counts including the Prized Companions, this can be enabled in the mod menu.
+
 Named animals can still be manually slaughtered for tough seasons and are still included in sales listings, but your prized animals and beloved pets will be spared from voracious butchers with the excuse of 'Just doing their jobs'.
 
 ---Expanded Utility of the Autoslaughter--
@@ -39,5 +41,3 @@ GitHub repo:
 https://github.com/ZenthWolf/PrizedCompanions
 Steam Workshop:
 https://steamcommunity.com/sharedfiles/filedetails/?id=2698000683
-Nexus:
-ComingSoon?
