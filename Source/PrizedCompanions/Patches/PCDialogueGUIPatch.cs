@@ -38,8 +38,6 @@ namespace Prized_Companions
 
     internal static class PCDialogueHeaderPatch
     {
-        static float offset;
-
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
         {
             List<CodeInstruction> codes = new List<CodeInstruction>(instructions);
@@ -148,12 +146,11 @@ namespace Prized_Companions
             //Fields
             System.Reflection.FieldInfo bonded = Type.GetType("RimWorld.Dialog_AutoSlaughter+AnimalCountRecord, Assembly-CSharp").GetField("bonded", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
 
-            //Things I don't understand, but currently need:
-            //Is this the best way?
             //Is this a sign I've gone too far?
             System.Reflection.FieldInfo row =Type.GetType("RimWorld.Dialog_AutoSlaughter+<>c__DisplayClass25_0, Assembly-CSharp").GetField("row");
 
-            bool doFirst = true;
+            bool doStaleUpdate = true;
+            bool doNewColumnElement = true;
             bool done = false;
 
             for (int i = 0; i < codes.Count(); ++i)
@@ -163,19 +160,48 @@ namespace Prized_Companions
                     yield return codes[i];
                     continue;
                 }
-                else if (doFirst)
+                //Update when slaughtering pregnant animals is toggled
+                else if (doStaleUpdate)
+                {
+                    if(codes[i].opcode == OpCodes.Call && codes[i].operand.ToString().Contains("RecalculateAnimals"))
+                    {
+                        yield return codes[i]; //Call RecalculateAnimals
+
+                        yield return new CodeInstruction(OpCodes.Ldarg_0);
+                        yield return new CodeInstruction(OpCodes.Ldfld, typeof(Dialog_AutoSlaughter).GetField("map", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
+                        yield return new CodeInstruction(OpCodes.Ldfld, typeof(Map).GetField("autoSlaughterManager", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance));
+                        yield return new CodeInstruction(OpCodes.Callvirt, typeof(AutoSlaughterManager).GetMethod("Notify_ConfigChanged", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance));
+                        doStaleUpdate = false;
+                        continue;
+                    }
+                    else
+                    {
+                        yield return codes[i];
+                        continue;
+                    }
+                }
+                else if (doNewColumnElement)
                 {
                     if (codes[i+4].opcode == OpCodes.Ret)
                     {
                         //Last Branch needs to be redirected
                         Label newLabel = generator.DefineLabel();
+                        //Branch if no change
                         yield return new CodeInstruction(codes[i].opcode, newLabel);
                         ++i;
+                        //ldarg_0
                         yield return codes[i];
                         ++i;
+                        //Call Recalculate Animals
                         yield return codes[i];
                         ++i;
+                        //Update when slaughtering Bonded animals is toggled
+                        yield return new CodeInstruction(OpCodes.Ldarg_0);
+                        yield return new CodeInstruction(OpCodes.Ldfld, typeof(Dialog_AutoSlaughter).GetField("map", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
+                        yield return new CodeInstruction(OpCodes.Ldfld, typeof(Map).GetField("autoSlaughterManager", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance));
+                        yield return new CodeInstruction(OpCodes.Callvirt, typeof(AutoSlaughterManager).GetMethod("Notify_ConfigChanged", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance));
 
+                        //New Check GUI Element
                         CodeInstruction jumpTarg = new CodeInstruction(OpCodes.Ldloca, 3);
                         jumpTarg.labels.Add(newLabel);
                         yield return jumpTarg;
@@ -191,7 +217,7 @@ namespace Prized_Companions
                         yield return codes[i]; // EndGUI Group
 
 
-                        doFirst = false;
+                        doNewColumnElement = false;
                         done = true;
                         continue;
                     }

@@ -55,9 +55,11 @@ namespace Prized_Companions
 			Scribe_Values.Look(ref this.liteModeSetter, "PrizeCompanionsLiteMode", false);
 			Scribe_Values.Look(ref this.doGUISetter, "PrizeCompanionsUseGUI", true);
 
-			liteMode = liteModeSetter;
-			doGUI = doGUISetter;
-
+			if (Scribe.mode == LoadSaveMode.LoadingVars)
+			{
+				liteMode = liteModeSetter;
+				doGUI = doGUISetter;
+			}
 			base.ExposeData();
 		}
 	}

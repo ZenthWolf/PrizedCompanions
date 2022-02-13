@@ -20,8 +20,8 @@
 	<Prized_Companions_Counter_TTip>Alternate method if you want total count easily.</Prized_Companions_Counter_TTip>
 	
 	
-	<Prized_Companions_PatchOptions>Patching Options</Prized_Companions_PatchOptions>
-	<Prized_Companions_Patch_Descriptor>Use below to limit the patching done in case of incompatability. Please alert me to compatability issues resolved by using Lite Mode.</Prized_Companions_Patch_Descriptor>
+	<Prized_Companions_CompatOptions>Compatability Options</Prized_Companions_CompatOptions>
+	<Prized_Companions_CompatDescriptor>Use below to limit the patching done in case of incompatability in functionality or with the new GUI element. Please alert me to compatability issues resolved by using Lite Mode- this is meant mostly as a temporary aid.</Prized_Companions_CompatDescriptor>
 	
 	<Prized_Companions_RestartNecessary>Changes require a restart to take effect.</Prized_Companions_RestartNecessary>
 	

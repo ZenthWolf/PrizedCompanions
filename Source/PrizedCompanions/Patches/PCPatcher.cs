@@ -30,17 +30,18 @@ namespace Prized_Companions
                     postfix: new HarmonyMethod(typeof(PCMiscarryyNotifications).GetMethod("Postfix", PatchFlags)));
                 harmony.Patch(typeof(Hediff_Pregnant).GetMethod("DoBirthSpawn"),
                     postfix: new HarmonyMethod(typeof(PCBirthNotifications).GetMethod("Postfix", PatchFlags)));
+
+                //Count Prized Animals
+                harmony.Patch(typeof(AutoSlaughterManager).GetMethod("get_AnimalsToSlaughter"),
+                    transpiler: new HarmonyMethod(typeof(PrizedCompanionsCountOnDisplay).GetMethod("Transpiler", PatchFlags)));
+
                 if (PrizedCompanions.Instance.settings.IsDoGUI)
                 {
-                    //Count Prized Animals
-                    harmony.Patch(typeof(AutoSlaughterManager).GetMethod("get_AnimalsToSlaughter"),
-                        transpiler: new HarmonyMethod(typeof(PrizedCompanionsCountOnDisplay).GetMethod("Transpiler", PatchFlags)));
-
                     //YoungestFirst Slaughter Logic
                     harmony.Patch(typeof(AutoSlaughterConfig).GetMethod("ExposeData"),
                         postfix: new HarmonyMethod(typeof(PCSlaughterConfigPatch).GetMethod("Postfix", PatchFlags)));
 
-                    //Youngest First GUId
+                    //Youngest First GUI
                     harmony.Patch(typeof(Dialog_AutoSlaughter).GetMethod("CalculateLabelWidth", nonpublicFlags),
                         postfix: new HarmonyMethod(typeof(PCLabelWidth).GetMethod("Postfix", PatchFlags)));
                     harmony.Patch(typeof(Dialog_AutoSlaughter).GetMethod("get_InitialSize"),

@@ -53,6 +53,7 @@ namespace Prized_Companions
             bool injectPrizeCounter = true;
             bool endLoop = true;
             bool invertCullAge = true;
+            bool bugfixPregnancyLast = true;
 
             //Next while loop to look for
             int nextCounter = 0;
@@ -263,6 +264,7 @@ namespace Prized_Companions
                     continue;
                 }
 
+                //Optionally inverts the age-ordering, based on configs
                 else if(invertCullAge)
                 {
                     //Picks out the start of the sortings
@@ -305,12 +307,44 @@ namespace Prized_Companions
                     continue;
                 }
 
+                //Properly prepends pregnant animal lists, opposed to the appending previously done
+                else if(bugfixPregnancyLast)
+                {
+                    if(codes[i+2].opcode == OpCodes.Callvirt && codes[i + 2].operand.ToString().Contains("AddRange"))
+                    {
+                        //codes[i].opcode = OpCodes.Ldflda;
+                        yield return codes[i]; //tmpAnimalsFemale
+                        ++i;
+                        yield return new CodeInstruction(OpCodes.Ldc_I4_0);
+
+                        //codes[i].opcode = OpCodes.Ldflda;
+                        yield return codes[i]; //tmpAnimalsPregnant
+                        ++i;
+                        yield return new CodeInstruction(OpCodes.Callvirt, typeof(List<Pawn>).GetMethod("InsertRange", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance));
+                        ++i;
+
+                        yield return codes[i]; //tmpAnimals
+                        ++i;
+                        yield return new CodeInstruction(OpCodes.Ldc_I4_0);
+
+                        yield return codes[i]; //tmpAnimalsPregnant
+                        ++i;
+                        yield return new CodeInstruction(OpCodes.Callvirt, typeof(List<Pawn>).GetMethod("InsertRange", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance));
+
+                        bugfixPregnancyLast = false;
+                        continue;
+                    }
+                    yield return codes[i];
+                    continue;
+                }
+
+
                 // Modify loop counters to include Prized Companions
                 else if (codes[i+1].operand != null && codes[i+1].operand.ToString().Contains("max"))
                 {
                     //Female Counter
                     if (nextCounter == 0)
-                    {;
+                    {
                         if (codes[i+1].operand.ToString().Contains("maxFemales"))
                         {
                             //Calculate new bound for while loop

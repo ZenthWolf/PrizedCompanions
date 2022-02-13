@@ -48,13 +48,33 @@ namespace Prized_Companions
 				highlightRect = listingCompanion.Label((string)"Prized_Companions_Counted".Translate());
 			else
 				highlightRect = listingCompanion.Label((string)"Prized_Companions_NotCounted".Translate());
-			listingCompanion.CheckboxLabeled((string)"Prized_Companions_CountCheckBox".Translate(), ref this.settings.isCounted, (string)"Prized_Companions_Counter_TTip".Translate(), !settings.isActive || settings.IsLiteMode);
 			DoHighlight(highlightRect);
+			listingCompanion.CheckboxLabeled((string)"Prized_Companions_CountCheckBox".Translate(), ref this.settings.isCounted, (string)"Prized_Companions_Counter_TTip".Translate(), !settings.isActive || settings.IsLiteMode);
+			
 
 			//Patch Options
 			heavyHighlight = false;
-			_ = listingCompanion.SectionLabel((string)"Prized_Companions_PatchOptions".Translate());
-			_ = listingCompanion.Label("Prized_Companions_Patch_Descriptor".Translate());
+			_ = listingCompanion.SectionLabel((string)"Prized_Companions_CompatOptions".Translate());
+			_ = listingCompanion.Label("Prized_Companions_CompatDescriptor".Translate());
+
+			if (settings.IsLiteMode)
+			{
+				GUI.color = Color.red;
+				highlightRect = listingCompanion.Label("Prized_Companions_InActiveInLite".Translate());
+				GUI.color = Color.white;
+			} 
+			else if (settings.IsDoGUI ^ settings.doGUISetter)
+			{
+				GUI.color = Color.red;
+				highlightRect = listingCompanion.Label("Prized_Companions_RestartNecessary".Translate());
+				GUI.color = Color.white;
+			}
+			else if (settings.IsDoGUI)
+				highlightRect = listingCompanion.Label("Prized_Companions_GUIAdded".Translate());
+			else
+				highlightRect = listingCompanion.Label("Prized_Companions_GUIOff".Translate());
+			DoHighlight(highlightRect);
+			listingCompanion.CheckboxLabeled((string)"Prized_Companions_DoGUI".Translate(), ref this.settings.doGUISetter, (string)"Prized_Companions_DoGUI_TTip".Translate());
 
 			if (settings.IsLiteMode ^ settings.liteModeSetter)
 			{
@@ -66,21 +86,9 @@ namespace Prized_Companions
 				highlightRect = listingCompanion.Label("Prized_Companions_LiteModeOff".Translate());
 			else
 				highlightRect = listingCompanion.Label("Prized_Companions_LiteModeOn".Translate());
+			DoHighlight(highlightRect);
 			listingCompanion.CheckboxLabeled((string)"Prized_Companions_LiteMode".Translate(), ref this.settings.liteModeSetter, (string)"Prized_Companions_LiteMode_TTip".Translate());
-			DoHighlight(highlightRect);
 
-			if (settings.IsDoGUI ^ settings.doGUISetter)
-			{
-				GUI.color = Color.red;
-				highlightRect = listingCompanion.Label("Prized_Companions_RestartNecessary".Translate());
-				GUI.color = Color.white;
-			}
-			else if (settings.IsDoGUI)
-				highlightRect = listingCompanion.Label("Prized_Companions_GUIAdded".Translate());
-			else
-				highlightRect = listingCompanion.Label("Prized_Companions_GUIOff".Translate());
-			listingCompanion.CheckboxLabeled((string)"Prized_Companions_DoGUI".Translate(), ref this.settings.doGUISetter, (string)"Prized_Companions_DoGUI_TTip".Translate());
-			DoHighlight(highlightRect);
 			listingCompanion.End();
 
 			this.settings.Update();
