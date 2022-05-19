@@ -82,9 +82,10 @@ namespace Prized_Companions
     /// </summary>
     internal static class PCBirthNotifications
     {
-        static void Postfix(Pawn ___pawn)
+        static void Postfix(Pawn mother)
         {
-            ___pawn.Map.autoSlaughterManager.Notify_PawnSpawned();
+            if (mother.Spawned)
+                mother.Map.autoSlaughterManager.Notify_PawnSpawned();
         }
     }
  }
