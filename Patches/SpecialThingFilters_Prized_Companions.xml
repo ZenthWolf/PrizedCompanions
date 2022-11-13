@@ -7,7 +7,7 @@
 		<xpath>/Defs</xpath>
 		<value>
 			<SpecialThingFilterDef>
-				<defName>AllowAnimalCorpses</defName>
+				<defName>PCAllowAnimalCorpses</defName>
 				<label>allow non-Companion animal corpses</label>
 				<description>Allow the dead bodies of animals (not Companions).</description>
 				<parentCategory>CorpsesAnimal</parentCategory>
@@ -20,15 +20,15 @@
 		<li Class="PatchOperationAdd">
 			<xpath>/Defs</xpath>
 			<value>
-			<SpecialThingFilterDef>
-				<defName>AllowCompanionCorpses</defName>
-				<label>allow Companion corpses</label>
-				<description>Allow the dead bodies of Companion animals.</description>
-				<parentCategory>CorpsesAnimal</parentCategory>
-				<allowedByDefault>false</allowedByDefault>
-				<saveKey>allowCorpsesCompanion</saveKey>
-				<workerClass>PCSpecialThingFilterWorker_CorpsesCompanion</workerClass>
-			</SpecialThingFilterDef>
+				<SpecialThingFilterDef>
+					<defName>PCAllowCompanionCorpses</defName>
+					<label>allow Companion corpses</label>
+					<description>Allow the dead bodies of Companion animals.</description>
+					<parentCategory>CorpsesAnimal</parentCategory>
+					<allowedByDefault>false</allowedByDefault>
+					<saveKey>allowCorpsesCompanion</saveKey>
+					<workerClass>PCSpecialThingFilterWorker_CorpsesCompanion</workerClass>
+				</SpecialThingFilterDef>
 			</value>
 		</li>
 	</operations>
