@@ -71,6 +71,8 @@
     <Compile Include="Patches\PCNotifyNames.cs" />
     <Compile Include="Patches\PCAutoSlaughterPatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpecialFilterWorkers\PCSpecialThingFilterWorker_CorpsesAnimal.cs" />
+    <Compile Include="SpecialFilterWorkers\PCSpecialThingFilterWorker_CorpsesCompanion.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
