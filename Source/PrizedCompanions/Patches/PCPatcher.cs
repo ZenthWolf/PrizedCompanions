@@ -26,7 +26,7 @@ namespace Prized_Companions
                 //Pregnancy-related notifications to update list
                 harmony.Patch(typeof(HediffComp_MessageAfterTicks).GetMethod("CompPostTick"),
                     transpiler: new HarmonyMethod(typeof(PCPregnancyNotifications).GetMethod("Transpiler", PatchFlags)));
-                harmony.Patch(typeof(Hediff_Pregnant).GetMethod("Miscarry", nonpublicFlags),
+                harmony.Patch(typeof(Hediff_Pregnant).GetMethod("Miscarry"),
                     postfix: new HarmonyMethod(typeof(PCMiscarryyNotifications).GetMethod("Postfix", PatchFlags)));
                 harmony.Patch(typeof(Hediff_Pregnant).GetMethod("DoBirthSpawn"),
                     postfix: new HarmonyMethod(typeof(PCBirthNotifications).GetMethod("Postfix", PatchFlags)));
