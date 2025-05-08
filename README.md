@@ -36,7 +36,10 @@ Bugs Quashed:
 	===Save Game Compatability===
 	
 Prized Companions can be activated and deactivated midgame, however expect to need to update your autoslaughter numbers! Aside from the compatability settings, options will take effect immediately without need for restart.
-	
+
+	===Version Compatability===
+Compatible with the 1.5.4409 and 1.4.3901. It will need to be made more robust to survive updates reliably.
+
 	===Mod Compatability===
 	
 Please let me know if conflicts arise. The mod is intended to be highly compatible, but conflicts are due to arise.
