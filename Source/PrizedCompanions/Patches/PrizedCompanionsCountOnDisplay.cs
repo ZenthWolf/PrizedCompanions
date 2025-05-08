@@ -75,7 +75,6 @@ namespace Prized_Companions
                 {
                     if (codes[i].operand != null && codes[i].operand.ToString().Contains("tmpAnimals"))
                     {
-                        Log.Message("Attempting to allow to zero Prize Counter");
                         zeroPrizeCounters = false;
 
                         yield return new CodeInstruction(OpCodes.Ldc_I4_0);
@@ -101,7 +100,6 @@ namespace Prized_Companions
                 {
                     if (codes[i].opcode == OpCodes.Bgt)
                     {
-                        Log.Message("Attempting to inject prized counters");
                         yield return codes[i];
 
                         //mod is active
@@ -257,7 +255,6 @@ namespace Prized_Companions
                 {
                     if ( (codes[i].opcode == OpCodes.Ldloca_S) && (codes[i-1].opcode == OpCodes.Callvirt) )
                     {
-                        Log.Message("Attempting to handle end of loop");
                         codes[i].labels.Add(EndCounterLoop);
                         endLoop = false;
 
@@ -274,7 +271,6 @@ namespace Prized_Companions
                     //Picks out the start of the sortings
                     if(codes[i].operand != null && codes[i].operand.ToString().Contains("tmpAnimals"))
                     {
-                        Log.Message("Attempting to allow for age-inversion");
                         var newSortStart = new CodeInstruction(OpCodes.Ldloc_1);
                         foreach( Label l in codes[i].labels)
                             newSortStart.labels.Add(l);
@@ -320,27 +316,7 @@ namespace Prized_Companions
                         yield return new CodeInstruction(OpCodes.Ldarg_0);
                         yield return new CodeInstruction(OpCodes.Ldflda, typeof(AutoSlaughterManager).GetField("tmpAnimalsFemaleYoung", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static));
                         yield return new CodeInstruction(OpCodes.Call, typeof(PrizedCompanionsCountOnDisplay).GetMethod("AltPregnantSorter", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static));
-                        i += 11;
-                        //codes[i].opcode = OpCodes.Ldflda;
-                        yield return codes[i]; //tmpAnimalsFemale
-                        ++i;
-                        // If needing insert range
-                        //yield return new CodeInstruction(OpCodes.Ldc_I4_0);
-
-                        //codes[i].opcode = OpCodes.Ldflda;
-                        yield return codes[i]; //tmpAnimalsPregnant
-                        ++i;
-                        //yield return new CodeInstruction(OpCodes.Callvirt, typeof(List<Pawn>).GetMethod("InsertRange", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance));
-                        yield return codes[i];
-                        ++i;
-
-                        yield return codes[i]; //tmpAnimals
-                        ++i;
-                        yield return new CodeInstruction(OpCodes.Ldc_I4_0);
-
-                        yield return codes[i]; //tmpAnimalsPregnant
-                        ++i;
-                        yield return new CodeInstruction(OpCodes.Callvirt, typeof(List<Pawn>).GetMethod("InsertRange", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance));
+                        i += 10;
 
                         bugfixPregnancyLast = false;
                         continue;
@@ -353,7 +329,6 @@ namespace Prized_Companions
                 // Modify loop counters to include Prized Companions
                 else if (codes[i+1].operand != null && codes[i+1].operand.ToString().Contains("max"))
                 {
-                    Log.Message("Attempting to modify loop counters");
                     //Female Counter
                     if (nextCounter == 0)
                     {
@@ -374,7 +349,7 @@ namespace Prized_Companions
 
                                 //max( maxAllowed - PrizedCounter , 0)
                                 yield return new CodeInstruction(OpCodes.Stloc, PrizedCounterFemale); // May be irresponsible? No one is here to stop me...
-
+                                
                                 yield return new CodeInstruction(OpCodes.Ldloc, PrizedCounterFemale);
                                 yield return new CodeInstruction(OpCodes.Ldc_I4_0);
                                 yield return new CodeInstruction(OpCodes.Bge, whileFemale);

@@ -33,12 +33,10 @@ namespace Prized_Companions
             if(cfg.IsYoungestFirst())
             {
                 cfg.SetOldestFirst();
-                Log.Warning("Setting oldest first. Is Youngest first? " + cfg.IsYoungestFirst().ToString());
             }
             else
             {
                 cfg.SetYoungestFirst();
-                Log.Warning("Setting oldest first. Is Youngest first? " + cfg.IsYoungestFirst().ToString());
             }
         }
     }

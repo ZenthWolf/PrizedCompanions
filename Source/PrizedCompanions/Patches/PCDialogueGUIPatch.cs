@@ -246,7 +246,6 @@ namespace Prized_Companions
             Widgets.Checkbox(row.FinalX, 0.0f, ref isYoungestFirst, paintable: true);
             if (isYoungestFirst ^ wasYoungestFirst)
             {
-                Log.Warning("Map exists? " + (map != null ? map.ToString() : "No!"));
                 config.InvertCullLogic();
                 map.autoSlaughterManager.Notify_ConfigChanged();
                 return true;
