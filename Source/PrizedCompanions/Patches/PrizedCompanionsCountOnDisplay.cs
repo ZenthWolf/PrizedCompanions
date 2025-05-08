@@ -6,6 +6,7 @@ using HarmonyLib;
 using Verse;
 using RimWorld;
 using System.Reflection.Emit;
+using System.Reflection;
 
 // If it works, run away before it catches fire
 //
@@ -74,6 +75,7 @@ namespace Prized_Companions
                 {
                     if (codes[i].operand != null && codes[i].operand.ToString().Contains("tmpAnimals"))
                     {
+                        Log.Message("Attempting to allow to zero Prize Counter");
                         zeroPrizeCounters = false;
 
                         yield return new CodeInstruction(OpCodes.Ldc_I4_0);
@@ -99,6 +101,7 @@ namespace Prized_Companions
                 {
                     if (codes[i].opcode == OpCodes.Bgt)
                     {
+                        Log.Message("Attempting to inject prized counters");
                         yield return codes[i];
 
                         //mod is active
@@ -254,6 +257,7 @@ namespace Prized_Companions
                 {
                     if ( (codes[i].opcode == OpCodes.Ldloca_S) && (codes[i-1].opcode == OpCodes.Callvirt) )
                     {
+                        Log.Message("Attempting to handle end of loop");
                         codes[i].labels.Add(EndCounterLoop);
                         endLoop = false;
 
@@ -270,6 +274,7 @@ namespace Prized_Companions
                     //Picks out the start of the sortings
                     if(codes[i].operand != null && codes[i].operand.ToString().Contains("tmpAnimals"))
                     {
+                        Log.Message("Attempting to allow for age-inversion");
                         var newSortStart = new CodeInstruction(OpCodes.Ldloc_1);
                         foreach( Label l in codes[i].labels)
                             newSortStart.labels.Add(l);
@@ -310,17 +315,23 @@ namespace Prized_Companions
                 //Properly prepends pregnant animal lists, opposed to the appending previously done
                 else if(bugfixPregnancyLast)
                 {
-                    if(codes[i+2].opcode == OpCodes.Callvirt && codes[i + 2].operand.ToString().Contains("AddRange"))
+                    if(codes[i + 13].opcode == OpCodes.Callvirt && codes[i + 13].operand.ToString().Contains("AddRange"))
                     {
+                        yield return new CodeInstruction(OpCodes.Ldarg_0);
+                        yield return new CodeInstruction(OpCodes.Ldflda, typeof(AutoSlaughterManager).GetField("tmpAnimalsFemaleYoung", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static));
+                        yield return new CodeInstruction(OpCodes.Call, typeof(PrizedCompanionsCountOnDisplay).GetMethod("AltPregnantSorter", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static));
+                        i += 11;
                         //codes[i].opcode = OpCodes.Ldflda;
                         yield return codes[i]; //tmpAnimalsFemale
                         ++i;
-                        yield return new CodeInstruction(OpCodes.Ldc_I4_0);
+                        // If needing insert range
+                        //yield return new CodeInstruction(OpCodes.Ldc_I4_0);
 
                         //codes[i].opcode = OpCodes.Ldflda;
                         yield return codes[i]; //tmpAnimalsPregnant
                         ++i;
-                        yield return new CodeInstruction(OpCodes.Callvirt, typeof(List<Pawn>).GetMethod("InsertRange", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance));
+                        //yield return new CodeInstruction(OpCodes.Callvirt, typeof(List<Pawn>).GetMethod("InsertRange", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance));
+                        yield return codes[i];
                         ++i;
 
                         yield return codes[i]; //tmpAnimals
@@ -342,6 +353,7 @@ namespace Prized_Companions
                 // Modify loop counters to include Prized Companions
                 else if (codes[i+1].operand != null && codes[i+1].operand.ToString().Contains("max"))
                 {
+                    Log.Message("Attempting to modify loop counters");
                     //Female Counter
                     if (nextCounter == 0)
                     {
@@ -640,11 +652,16 @@ namespace Prized_Companions
         private static void AltSorter(ref List<Pawn> tmpAnimals, ref List<Pawn> tmpAnimalsMale, ref List<Pawn> tmpAnimalsMaleYoung,
             ref List<Pawn> tmpAnimalsFemale, ref List<Pawn> tmpAnimalsFemaleYoung)
         {
-            tmpAnimals.SortBy<Pawn, long>((Func<Pawn, long>)(a => -a.ageTracker.AgeBiologicalTicks));
-            tmpAnimalsMale.SortBy<Pawn, long>((Func<Pawn, long>)(a => -a.ageTracker.AgeBiologicalTicks));
-            tmpAnimalsMaleYoung.SortBy<Pawn, long>((Func<Pawn, long>)(a => -a.ageTracker.AgeBiologicalTicks));
-            tmpAnimalsFemale.SortBy<Pawn, long>((Func<Pawn, long>)(a => -a.ageTracker.AgeBiologicalTicks));
-            tmpAnimalsFemaleYoung.SortBy<Pawn, long>((Func<Pawn, long>)(a => -a.ageTracker.AgeBiologicalTicks));
+            tmpAnimals.SortBy<Pawn, long>((Func<Pawn, long>)(a => a.ageTracker.AgeBiologicalTicks));
+            tmpAnimalsMale.SortBy<Pawn, long>((Func<Pawn, long>)(a => a.ageTracker.AgeBiologicalTicks));
+            tmpAnimalsMaleYoung.SortBy<Pawn, long>((Func<Pawn, long>)(a => a.ageTracker.AgeBiologicalTicks));
+            tmpAnimalsFemale.SortBy<Pawn, long>((Func<Pawn, long>)(a => a.ageTracker.AgeBiologicalTicks));
+            tmpAnimalsFemaleYoung.SortBy<Pawn, long>((Func<Pawn, long>)(a => a.ageTracker.AgeBiologicalTicks));
+        }
+
+        private static void AltPregnantSorter(ref List<Pawn> tmpAnimalsPregnant)
+        {
+            tmpAnimalsPregnant.SortBy<Pawn, float>((Func<Pawn, float>)(a => a.health.hediffSet.GetFirstHediffOfDef(HediffDefOf.Pregnant).Severity));
         }
     }
 }

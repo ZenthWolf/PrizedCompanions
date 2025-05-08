@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using RimWorld;
 using Verse;
+using static Prized_Companions.PCDialogueRowPatch;
 
 namespace Prized_Companions
 {

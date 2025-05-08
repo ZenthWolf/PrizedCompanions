@@ -7,6 +7,7 @@ using HarmonyLib;
 using RimWorld;
 using Verse;
 using UnityEngine;
+using System.Reflection;
 
 
 namespace Prized_Companions
@@ -147,7 +148,7 @@ namespace Prized_Companions
             System.Reflection.FieldInfo bonded = Type.GetType("RimWorld.Dialog_AutoSlaughter+AnimalCountRecord, Assembly-CSharp").GetField("bonded", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
 
             //Is this a sign I've gone too far?
-            System.Reflection.FieldInfo row =Type.GetType("RimWorld.Dialog_AutoSlaughter+<>c__DisplayClass25_0, Assembly-CSharp").GetField("row");
+            System.Reflection.FieldInfo row =Type.GetType("RimWorld.Dialog_AutoSlaughter+<>c__DisplayClass25_1, Assembly-CSharp").GetField("row");
 
             bool doStaleUpdate = true;
             bool doNewColumnElement = true;
@@ -202,12 +203,13 @@ namespace Prized_Companions
                         yield return new CodeInstruction(OpCodes.Callvirt, typeof(AutoSlaughterManager).GetMethod("Notify_ConfigChanged", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance));
 
                         //New Check GUI Element
-                        CodeInstruction jumpTarg = new CodeInstruction(OpCodes.Ldloca, 3);
+                        CodeInstruction jumpTarg = new CodeInstruction(OpCodes.Ldloca, 4);
                         jumpTarg.labels.Add(newLabel);
                         yield return jumpTarg;
                         yield return new CodeInstruction(OpCodes.Ldflda, row);
-                        yield return new CodeInstruction(OpCodes.Ldarg_3);
-                        yield return new CodeInstruction(OpCodes.Ldarga, 1);
+                        yield return new CodeInstruction(OpCodes.Ldarg_2);
+                        yield return new CodeInstruction(OpCodes.Ldarg_0);
+                        yield return new CodeInstruction(OpCodes.Ldflda, typeof(Dialog_AutoSlaughter).GetField("map", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance));
                         yield return new CodeInstruction(OpCodes.Call, typeof(PCDialogueRowPatch).GetMethod("PCRowElement", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static));
                         yield return new CodeInstruction(OpCodes.Brfalse, codes[i].labels[0]);
 
@@ -244,6 +246,7 @@ namespace Prized_Companions
             Widgets.Checkbox(row.FinalX, 0.0f, ref isYoungestFirst, paintable: true);
             if (isYoungestFirst ^ wasYoungestFirst)
             {
+                Log.Warning("Map exists? " + (map != null ? map.ToString() : "No!"));
                 config.InvertCullLogic();
                 map.autoSlaughterManager.Notify_ConfigChanged();
                 return true;
